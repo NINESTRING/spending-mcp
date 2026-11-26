@@ -44,6 +44,6 @@ When a task depends on how the app behaves in production - an error users hit, a
 
 ## Layout
 
-An MCP server for personal card spending, after https://docs.nestjs.com/tutorials/mcp-server.md. `src/main.ts` serves it over HTTP (`POST /mcp`, OAuth access tokens) and `src/stdio.ts` over stdio (no token; the owner is `SPENDING_OWNER`). `AppModule` is in `src/app.module.ts`; the tools and the prompt are methods of `SpendingTools` in `src/spending/`, and every `SpendingService` method takes the owner and puts it in the `WHERE` clause. The schema is `src/database/schema.ts`: after changing it, run `npm run db:generate -- --name=<what-changed>` and `npm run db:migrate`. PostgreSQL runs with `docker compose up -d`.
+An MCP server for personal card spending, after https://docs.nestjs.com/tutorials/mcp-server.md. `src/main.ts` serves it over HTTP (`POST /mcp`, OAuth access tokens) and `src/stdio.ts` over stdio (no token; the owner is `SPENDING_OWNER`). `AppModule` is in `src/app.module.ts`; the tools and the prompt are methods of `SpendingTools` in `src/spending/`, and every `SpendingService` method takes the owner and puts it in the `WHERE` clause. The schema is `src/database/schema.ts`: after changing it, run `pnpm db:generate --name=<what-changed>` and `pnpm db:migrate`. PostgreSQL runs with `docker compose up -d`.
 
 This project is ESM: relative imports end in `.js`, and `__dirname` doesn't exist (use `import.meta.dirname`).
