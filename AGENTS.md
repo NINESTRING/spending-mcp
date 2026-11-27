@@ -47,3 +47,7 @@ When a task depends on how the app behaves in production - an error users hit, a
 A personal assistant MCP server, after https://docs.nestjs.com/tutorials/mcp-server.md. `src/main.ts` serves it over HTTP (`POST /mcp`, OAuth access tokens) and `src/stdio.ts` over stdio (no token; the owner is `ASSISTANT_OWNER`). `AppModule` is in `src/app.module.ts`. Each domain is a module under `src/`; card spending, in `src/spending/`, is the first: its tools and prompt are methods of `SpendingTools`, and every `SpendingService` method takes the owner and puts it in the `WHERE` clause. The schema is `src/database/schema.ts`: after changing it, run `pnpm db:generate --name=<what-changed>` and `pnpm db:migrate`. PostgreSQL is whatever `DATABASE_URL` in `.env` points at (local, homelab or cloud); nothing in the repo starts one, so `ECONNREFUSED` means that host and port aren't reachable, for example a port-forward or VPN that isn't up.
 
 This project is ESM: relative imports end in `.js`, and `__dirname` doesn't exist (use `import.meta.dirname`).
+
+## Commits
+
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org): `type(scope): description`, with the type in English (`feat`, `fix`, `refactor`, `build`, `docs`, `chore`, ...) and the description and body in Korean. A change that breaks existing setups (a renamed environment variable, a renamed tool) gets `!` after the type and a `BREAKING CHANGE:` footer saying what to change.
