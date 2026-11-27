@@ -20,8 +20,8 @@ export const envSchema = z.object({
   OIDC_TOKEN_TYPE: z.string().default('at+jwt'),
   // The hostnames the Host header may name, comma-separated.
   MCP_ALLOWED_HOSTS: list.default(['localhost', '127.0.0.1', '[::1]']),
-  // Over stdio there is no token: whose spending the local user works with.
-  SPENDING_OWNER: z.string().regex(/^[a-z0-9-]+$/).optional(),
+  // Over stdio there is no token: whose data the local user works with.
+  ASSISTANT_OWNER: z.string().regex(/^[a-z0-9-]+$/).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

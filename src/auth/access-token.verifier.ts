@@ -36,7 +36,7 @@ export class AccessTokenVerifier implements McpTokenVerifier {
       scopes: scopesOf(claims),
       expiresAt: claims.exp,
       resource: this.resource,
-      // The owner of the spending: every query is scoped to it.
+      // The owner of the data: every query is scoped to it.
       extra: { subject: claims.sub },
     };
   }

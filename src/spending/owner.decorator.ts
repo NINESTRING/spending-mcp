@@ -1,7 +1,7 @@
 import { createParamDecorator, ForbiddenException, type ExecutionContext } from '@nestjs/common';
 import { McpExecutionContext } from '@nestjs/mcp';
 
-/** Whose spending a call reads and writes. */
+/** Whose data a call reads and writes. */
 export interface Owner {
   id: string;
 }
@@ -12,10 +12,10 @@ export interface Owner {
  */
 export const CurrentOwner = createParamDecorator((_data: unknown, context: ExecutionContext): Owner => {
   const ctx = McpExecutionContext.create(context).getContext();
-  const id = ctx.transport === 'stdio' ? process.env.SPENDING_OWNER : ctx.authInfo?.extra?.subject;
+  const id = ctx.transport === 'stdio' ? process.env.ASSISTANT_OWNER : ctx.authInfo?.extra?.subject;
   if (typeof id !== 'string' || !id) {
     throw new ForbiddenException(
-      ctx.transport === 'stdio' ? 'Set SPENDING_OWNER to the owner to work as' : 'The access token names no subject',
+      ctx.transport === 'stdio' ? 'Set ASSISTANT_OWNER to the owner to work as' : 'The access token names no subject',
     );
   }
   return { id };

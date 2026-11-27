@@ -6,7 +6,7 @@ export const transactions = pgTable(
   'transactions',
   {
     id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
-    // Whose spending it is: the token's subject over HTTP, SPENDING_OWNER over stdio.
+    // Whose spending it is: the token's subject over HTTP, ASSISTANT_OWNER over stdio.
     ownerId: text('owner_id').notNull(),
     // The day of the purchase, as the statement prints it: a calendar day, no time zone.
     spentOn: date('spent_on', { mode: 'string' }).notNull(),

@@ -1,6 +1,6 @@
-# spending-mcp
+# assistant-mcp
 
-카드 명세서를 AI 어시스턴트에게 주면 정리해서 DB에 쌓아 두고, 언제든 "이번 달 지출 분석해 줘"라고 물어볼 수 있게 해 주는 개인 지출 관리 **MCP 서버**입니다.
+AI 어시스턴트가 개인 비서로 일할 때 쓰는 **MCP 서버**입니다. 첫 번째 기능은 지출 관리입니다. 카드 명세서를 주면 정리해서 DB에 쌓아 두고, 언제든 "이번 달 지출 분석해 줘"라고 물어볼 수 있습니다.
 
 NestJS와 [`@nestjs/mcp`](https://docs.nestjs.com/mcp/overview)로 만들었고, 구조는 [NestJS MCP 서버 튜토리얼](https://docs.nestjs.com/tutorials/mcp-server)을 따릅니다.
 
@@ -13,7 +13,7 @@ NestJS와 [`@nestjs/mcp`](https://docs.nestjs.com/mcp/overview)로 만들었고,
   AI 어시스턴트 (Claude)  ── 날짜·가맹점·금액·카테고리로 구조화
         │  MCP
         ▼
-  spending-mcp (NestJS)   ── 검증, 중복 제거, 집계
+  assistant-mcp (NestJS)  ── 검증, 중복 제거, 집계
         │
         ▼
      PostgreSQL
@@ -46,30 +46,31 @@ NestJS와 [`@nestjs/mcp`](https://docs.nestjs.com/mcp/overview)로 만들었고,
 
 | 방식 | 실행 | 인증 | 사용자 식별 |
 | --- | --- | --- | --- |
-| stdio | `node dist/stdio.js` | 없음 (로컬 프로세스) | 환경변수 `SPENDING_OWNER` |
+| stdio | `node dist/stdio.js` | 없음 (로컬 프로세스) | 환경변수 `ASSISTANT_OWNER` |
 | HTTP | `POST /mcp` | OAuth 2.1 액세스 토큰 (JWT) | 토큰의 `sub` |
 
 HTTP에서 읽기는 `spending:read`, 쓰기 Tool은 `spending:write` 스코프가 필요합니다.
 
 ## 시작하기
 
-Node.js 22.18 이상과 Docker가 필요합니다.
+Node.js 22.18 이상과 접속할 수 있는 PostgreSQL 18 데이터베이스가 필요합니다. 로컬, 홈랩, 클라우드(RDS 등) 어디에 있든 `.env`의 `DATABASE_URL`만 그 주소로 맞추면 됩니다.
 
 ```bash
 pnpm install
-cp .env.example .env
-docker compose up -d      # PostgreSQL 17
+cp .env.example .env      # DATABASE_URL을 사용할 DB 주소로 수정
 pnpm db:migrate
 pnpm build
 ```
 
+`pnpm db:migrate`에서 `ECONNREFUSED`가 나오면 `DATABASE_URL`의 호스트·포트에 DB가 열려 있지 않은 것입니다. 사설망 안의 DB라면 포트포워딩이나 VPN이 먼저 연결돼 있어야 합니다.
+
 ### Claude Code에 연결
 
 ```bash
-claude mcp add spending --env SPENDING_OWNER=me -- node /절대/경로/spending-mcp/dist/stdio.js
+claude mcp add assistant --env ASSISTANT_OWNER=me -- node /절대/경로/assistant-mcp/dist/stdio.js
 ```
 
-`SPENDING_OWNER`는 데이터 주인을 구분하는 이름입니다(영문 소문자, 숫자, `-`). 등록 후 새 세션에서 다음처럼 씁니다.
+`ASSISTANT_OWNER`는 데이터 주인을 구분하는 이름입니다(영문 소문자, 숫자, `-`). 등록 후 새 세션에서 다음처럼 씁니다.
 
 - "이 카드 명세서 저장해 줘" (파일이나 텍스트 첨부)
 - "이번 달 지출 분석해 줘"
@@ -83,10 +84,10 @@ claude mcp add spending --env SPENDING_OWNER=me -- node /절대/경로/spending-
 ```json
 {
   "mcpServers": {
-    "spending": {
+    "assistant": {
       "command": "node",
-      "args": ["/절대/경로/spending-mcp/dist/stdio.js"],
-      "env": { "SPENDING_OWNER": "me" }
+      "args": ["/절대/경로/assistant-mcp/dist/stdio.js"],
+      "env": { "ASSISTANT_OWNER": "me" }
     }
   }
 }
@@ -102,7 +103,7 @@ src/
 ├── config.ts                환경변수 스키마 (Zod)
 ├── auth/                    JWT 액세스 토큰 검증
 ├── database/schema.ts       테이블 정의 (Drizzle)
-└── spending/
+└── spending/                지출 관리 도메인
     ├── spending.tools.ts    Tool과 Prompt 정의
     ├── spending.service.ts  저장, 조회, 집계 쿼리
     ├── owner.decorator.ts   호출한 사용자 식별
@@ -118,7 +119,7 @@ pnpm db:migrate
 
 ## 기술 스택
 
-NestJS 12 · `@nestjs/mcp` · MCP TypeScript SDK · PostgreSQL 17 · Drizzle ORM · Zod
+NestJS 12 · `@nestjs/mcp` · MCP TypeScript SDK · PostgreSQL 18 · Drizzle ORM · Zod
 
 ## 현재 상태
 

@@ -19,7 +19,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       // Empty until `npx @nestjs/observe link` writes the key pair into .env: the SDK then sends nothing.
       appKey: process.env.OBSERVE_APP_KEY ?? '',
       appSecret: process.env.OBSERVE_APP_SECRET ?? '',
-      serviceId: 'spending-mcp',
+      serviceId: 'assistant-mcp',
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -38,10 +38,10 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       imports: [AuthModule],
       inject: [ConfigService, AccessTokenVerifier],
       useFactory: (config: ConfigService<Env, true>, verifier: AccessTokenVerifier) => ({
-        name: 'spending',
+        name: 'assistant',
         version: '0.1.0',
         instructions:
-          "The user's card spending. When they give you a card statement, turn every line into a transaction and store them with import-transactions. For questions about a month, use summarize-spending and compare-months, and report the numbers they return rather than adding transactions up yourself.",
+          "The user's personal assistant. Card spending: when they give you a card statement, turn every line into a transaction and store them with import-transactions. For questions about a month, use summarize-spending and compare-months, and report the numbers they return rather than adding transactions up yourself.",
         include: [SpendingModule],
         http: { allowedHosts: config.get('MCP_ALLOWED_HOSTS', { infer: true }) },
         auth: {
@@ -51,7 +51,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
           scopesSupported: ['spending:read', 'spending:write'],
           // Every request, from the first, needs the read scope.
           requiredScopes: ['spending:read'],
-          resourceName: 'Spending',
+          resourceName: 'Assistant',
         },
       }),
     }),
